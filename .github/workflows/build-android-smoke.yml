@@ -34,9 +34,14 @@ jobs:
       - name: Install .NET Android workload
         shell: pwsh
         run: dotnet workload install android
-      - name: Publish ARM64 development-signed APK
+      - name: Create smoke signing key
         shell: pwsh
-        run: dotnet publish src/PocketMU.SmokeAndroid/PocketMU.SmokeAndroid.csproj -c Debug -f net10.0-android -r android-arm64 -o publish/smoke -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT -p:AcceptAndroidSdkLicenses=true
+        run: |
+          New-Item -ItemType Directory -Force publish | Out-Null
+          keytool -genkeypair -v -keystore publish/smoke.keystore -storepass android -keypass android -alias smoke -keyalg RSA -keysize 2048 -validity 10000 -dname "CN=PocketMU Smoke,O=PocketMU,C=US"
+      - name: Publish ARM64 signed APK
+        shell: pwsh
+        run: dotnet publish src/PocketMU.SmokeAndroid/PocketMU.SmokeAndroid.csproj -c Release -f net10.0-android -r android-arm64 -o publish/smoke -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT -p:AcceptAndroidSdkLicenses=true -p:AndroidKeyStore=true -p:AndroidSigningKeyStore=$pwd/publish/smoke.keystore -p:AndroidSigningStorePass=android -p:AndroidSigningKeyAlias=smoke -p:AndroidSigningKeyPass=android
       - name: Verify APK exists
         shell: pwsh
         run: |
