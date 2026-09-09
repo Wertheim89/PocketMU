@@ -4,7 +4,7 @@ PocketMU is an experimental project exploring a fully offline MU Online experien
 
 The eventual aim is: install one APK, import legally obtained game data, create a local account, start a local realm, and play without an internet connection or a separate computer.
 
-**Current status: Phase 0 feasibility audit complete. CONDITIONAL GO for a narrowly scoped proof of concept. No playable application or APK has been built. Phase 1 has not started.**
+**Current status: Phase 0 feasibility audit complete. Phase 1 Gate A is in progress. An independent asset-free Android smoke project and GitHub Actions workflow have been added; no playable application or PocketMU realm exists.**
 
 The proposed route is a reduced OpenMU server inside the same .NET for Android application as a MonoGame client, using local loopback networking and an embedded SQLite save store. Server hosting, durable saving, client reuse permission and asset compatibility still need to be proved.
 
@@ -15,6 +15,7 @@ The proposed route is a reduced OpenMU server inside the same .NET for Android a
 - [Milestones](docs/MILESTONES.md): the small first playable test and later stages.
 - [Product goal](PROJECT_GOAL.md): the vision and constraints.
 - [Source audit](docs/SOURCE_AUDIT.md): exact upstream revisions, inspected files and verification limits.
+- [Phase 1 Gate A](docs/PHASE_1_GATE_A.md): rights, data and smoke-APK exit checklist.
 
 ## Game data and permissions
 
@@ -26,8 +27,9 @@ An upstream code licence does not establish the rights to every bundled asset. T
 
 You do not need Android Studio, .NET, Git, Docker or PostgreSQL installed. There is nothing to install or play yet. Future test APKs should be downloadable from GitHub Actions after the build and device tests pass.
 
-Work stops at Phase 0 until you request Phase 1. The first target is one local account, one character, Lorencia, one monster kill, and a save that survives closing and reopening the app.
+The current Gate A target is an asset-free ARM64 smoke APK. The first gameplay target remains one local account, one character, Lorencia, one monster kill, and a save that survives closing and reopening the app.
 
 ## Repository safeguards
 
 The ignore file blocks common asset, credential, build and local-data paths. A Phase 0 repository check permits only the reviewed documentation and safety files. These are safeguards, not a guarantee against secrets pasted into allowed text or a forced Git operation. Do not commit sensitive or proprietary material.
+
