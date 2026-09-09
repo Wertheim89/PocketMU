@@ -48,6 +48,8 @@ jobs:
           $apk = Get-ChildItem -LiteralPath publish/smoke -Filter *.apk -File
           if (-not $apk) { throw 'No APK was produced.' }
           Get-FileHash -Algorithm SHA256 $apk.FullName
+          $apksigner = Join-Path $env:ANDROID_HOME 'build-tools/35.0.0/apksigner.bat'
+          & $apksigner verify --verbose $apk.FullName
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
