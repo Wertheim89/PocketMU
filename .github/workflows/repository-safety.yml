@@ -1,0 +1,20 @@
+name: Phase 0 repository safety
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check-documents-only:
+    runs-on: windows-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out reviewed files
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Check Phase 0 file allowlist and credential patterns
+        shell: pwsh
+        run: ./scripts/check-repository.ps1
