@@ -1,0 +1,51 @@
+name: Build Android smoke APK
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'src/PocketMU.SmokeAndroid/**'
+      - '.github/workflows/build-android-smoke.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  build-android-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Set up .NET
+        uses: actions/setup-dotnet@d4c94342e560b34958eacfc5d055d21461ed1c5d
+        with:
+          dotnet-version: '10.0.x'
+      - name: Set up Java
+        uses: actions/setup-java@dded0888837ed1f317902acf8a20df0ad188d165
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@9b5e4d7c5e6f3f7df14c5a1e7b6d4e2f1a9c8b7d
+        with:
+          packages: 'platform-tools platforms;android-35 build-tools;35.0.0'
+          accept-android-sdk-licenses: true
+      - name: Install .NET Android workload
+        shell: pwsh
+        run: dotnet workload install android
+      - name: Publish ARM64 APK
+        shell: pwsh
+        run: dotnet publish src/PocketMU.SmokeAndroid/PocketMU.SmokeAndroid.csproj -c Release -f net10.0-android -r android-arm64 -o publish/smoke -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT -p:AcceptAndroidSdkLicenses=true
+      - name: Verify APK exists
+        shell: pwsh
+        run: |
+          $apk = Get-ChildItem -LiteralPath publish/smoke -Filter *.apk -File
+          if (-not $apk) { throw 'No APK was produced.' }
+          Get-FileHash -Algorithm SHA256 $apk.FullName
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: pocketmu-gate-a-smoke-apk
+          path: publish/smoke/*.apk
+
