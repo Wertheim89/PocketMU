@@ -1,4 +1,4 @@
-# Phase 0 only: no game code/assets have been admitted yet.
+# Gate A policy: only the independent smoke app and reviewed text/config files are admitted.
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path -Parent $PSScriptRoot
 $allowed = @(
@@ -9,10 +9,15 @@ $allowed = @(
     'docs/ARCHITECTURE.md',
     'docs/MILESTONES.md',
     'docs/SOURCE_AUDIT.md',
+    'docs/PHASE_1_GATE_A.md',
     'scripts/check-repository.ps1',
-    '.github/workflows/repository-safety.yml'
+    '.github/workflows/repository-safety.yml',
+    '.github/workflows/build-android-smoke.yml',
+    'src/PocketMU.SmokeAndroid/PocketMU.SmokeAndroid.csproj',
+    'src/PocketMU.SmokeAndroid/MainActivity.cs',
+    'src/PocketMU.SmokeAndroid/Properties/AndroidManifest.xml'
 )
-$tracked = @(git -C $repoRoot ls-files)
+$tracked = @(git -c safe.directory=$repoRoot -C $repoRoot ls-files)
 if ($LASTEXITCODE -ne 0) { throw 'Could not inspect tracked files.' }
 if ($tracked.Count -eq 0) { throw 'No tracked files were found.' }
 $failures = [System.Collections.Generic.List[string]]::new()
@@ -22,7 +27,7 @@ foreach ($path in $tracked) {
         continue
     }
     # Read the index, not a potentially different working-tree version.
-    $lines = @(git -C $repoRoot show ":$path")
+    $lines = @(git -c safe.directory=$repoRoot -C $repoRoot show ":$path")
     if ($LASTEXITCODE -ne 0) { throw "Could not read staged file: $path" }
     $content = $lines -join "\n"
     if ($content.IndexOf([char]0) -ge 0) {
@@ -49,3 +54,4 @@ if ($failures.Count -gt 0) {
     exit 1
 }
 Write-Output "PASS: $($tracked.Count) reviewed Phase 0 paths; no screened credentials found."
+
