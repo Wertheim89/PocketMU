@@ -34,9 +34,9 @@ jobs:
       - name: Install .NET Android workload
         shell: pwsh
         run: dotnet workload install android
-      - name: Publish ARM64 APK
+      - name: Publish ARM64 development-signed APK
         shell: pwsh
-        run: dotnet publish src/PocketMU.SmokeAndroid/PocketMU.SmokeAndroid.csproj -c Release -f net10.0-android -r android-arm64 -o publish/smoke -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT -p:AcceptAndroidSdkLicenses=true
+        run: dotnet publish src/PocketMU.SmokeAndroid/PocketMU.SmokeAndroid.csproj -c Debug -f net10.0-android -r android-arm64 -o publish/smoke -p:AndroidSdkDirectory=$env:ANDROID_SDK_ROOT -p:AcceptAndroidSdkLicenses=true
       - name: Verify APK exists
         shell: pwsh
         run: |
@@ -48,4 +48,3 @@ jobs:
         with:
           name: pocketmu-gate-a-smoke-apk
           path: publish/smoke/*.apk
-
